@@ -2,18 +2,17 @@
 
 Turn images and GIFs into text.
 
-## Install
+## Install (get img2text command)
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/Jam-Sw/img2text/main/install.sh | sh
 ```
 
-Then `img2text`
-
-Or download (unsigned) `img2text.app.zip` from [Releases](https://github.com/Jam-Sw/img2text/releases). 
-
-
-## Usage
+#### Run GUI (macOS):
+```sh
+img2text --gui
+```
+---
 
 ```sh
 img2text                       # opens the app: drop an image or GIF, tune, Copy or Export
@@ -22,6 +21,14 @@ img2text photo.png -m pixel    # true-colour square tiles, 2 per character
 img2text anim.gif              # plays in the terminal, Ctrl-C to stop
 img2text --help                # all modes and flags
 ```
+---
+
+<details>
+Or download (unsigned) `img2text.app.zip` from [Releases](https://github.com/Jam-Sw/img2text/releases). 
+<\details>
+
+
+
 
 Copy and Export follow the source: PNG for stills, animated GIF for GIFs.
 
