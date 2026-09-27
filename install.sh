@@ -14,23 +14,19 @@ DEST=${PREFIX:-/usr/local/bin}
 
 fail() { echo "img2text: $*" >&2; exit 1; }
 
-# Run a command, with sudo only when DEST is not writable by us.
 as_owner() {
     if [ -w "$DEST" ] || { [ ! -e "$DEST" ] && [ -w "$(dirname "$DEST")" ]; }; then "$@"
     else echo "(needs your password to write $DEST)"; sudo "$@"
     fi
 }
 
-# Piped through sh, stdin is this script; questions have to go to the terminal.
 ask() {
-    # -r /dev/tty can pass with no controlling terminal; only a real open proves one
     { : < /dev/tty; } 2>/dev/null || { echo "img2text is installed at $DEST/img2text; run in a terminal to uninstall."; return 1; }
     printf "%s [y/N] " "$1" > /dev/tty
     read -r reply < /dev/tty || return 1
     case $reply in [yY]*) return 0 ;; *) return 1 ;; esac
 }
 
-# Already installed? Offer to uninstall. Only ever remove our own binary.
 if [ -e "$DEST/img2text" ]; then
     "$DEST/img2text" --help 2>&1 | grep -q -- "--gui" \
         || fail "$DEST/img2text exists but is not this tool; leaving it alone."
@@ -48,7 +44,7 @@ fi
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
-build() {  # $1 = source dir; prints the built binary's path
+build() {
     command -v swift >/dev/null 2>&1 || fail "no prebuilt download, and Swift not found to build it. Install the command line tools: xcode-select --install"
     echo "Building from source (about a minute)…" >&2
     swift build --package-path "$1" -c release >/dev/null 2>&1 \
@@ -72,5 +68,5 @@ fi
 as_owner mkdir -p "$DEST"
 as_owner install -m 755 "$bin" "$DEST/img2text"
 echo "Installed. Run: img2text          (opens the app)"
-echo "           or: img2text photo.png (prints it in the terminal)"
+echo "           or: img2text photo.png (renders in the terminal)"
 echo "Run this installer again to uninstall."

@@ -5,7 +5,6 @@ import ImageIO
 enum Mode: String, CaseIterable {
     case ascii, half, quad, sextant, braille, pixel
 
-    /// cell width, cell height in pixels
     var cell: (w: Int, h: Int) {
         switch self {
         case .ascii, .half, .pixel: return (1, 2)
@@ -42,7 +41,6 @@ struct RGB: Equatable { var r: UInt8, g: UInt8, b: UInt8 }
 struct Cell {
     var ch: Character
     var color: RGB
-    /// pixel mode: colour of the bottom tile (`color` is the top one, drawn as ▀)
     var bg: RGB? = nil
 }
 
@@ -73,15 +71,13 @@ struct Rendering {
     }
 }
 
-private let quad = Array(" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█")  // bits: TL=1 TR=2 BL=4 BR=8
+private let quad = Array(" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█")
 private let brailleBits: [(dx: Int, dy: Int, bit: UInt32)] = [
     (0, 0, 0x01), (0, 1, 0x02), (0, 2, 0x04), (1, 0, 0x08),
     (1, 1, 0x10), (1, 2, 0x20), (0, 3, 0x40), (1, 3, 0x80),
 ]
 
 private func sextantChar(_ bits: Int) -> Character {
-    // bits row-major TL=1 TR=2 ML=4 MR=8 BL=16 BR=32. U+1FB00 block skips
-    // the 4 patterns that already exist elsewhere (blank, ▌, ▐, █).
     switch bits {
     case 0: return " "
     case 21: return "▌"
@@ -106,7 +102,6 @@ let maxRows = 1000
 final class Source {
     let count: Int
     let delays: [Double]
-    /// source pixel size of frame 0, for aspect ratio
     let size: (w: Int, h: Int)
     private let src: CGImageSource
 
@@ -125,7 +120,6 @@ final class Source {
             let props = CGImageSourceCopyPropertiesAtIndex(src, i, nil) as? [CFString: Any]
             let gif = props?[kCGImagePropertyGIFDictionary] as? [CFString: Any]
             let d = (gif?[kCGImagePropertyGIFUnclampedDelayTime] ?? gif?[kCGImagePropertyGIFDelayTime]) as? Double ?? 0
-            // browsers treat sub-20ms delays as 100ms; match so playback speed looks familiar
             return d < 0.02 ? 0.1 : d
         }
     }
@@ -140,7 +134,6 @@ final class Source {
     func render(_ i: Int, _ o: Options) -> Rendering? {
         let (cols, rows) = grid(o, w: size.w, h: size.h)
         let (cw, ch) = o.mode.cell
-        // 2× the target so the resample in `render` still has detail to average
         guard let img = image(i, maxPixel: 2 * max(cols * cw, rows * ch)) else { return nil }
         return img2text.render(img, o)
     }
@@ -149,7 +142,6 @@ final class Source {
 func grid(_ o: Options, w: Int, h: Int) -> (cols: Int, rows: Int) {
     let cols = min(max(1, o.width), maxWidth)
     let (iw, ih) = o.rotate % 180 == 0 ? (w, h) : (h, w)
-    // terminal chars are ~2x taller than wide, so rows = half the aspect-correct count
     let rows = Int((Double(ih) / Double(iw) * Double(cols) / 2).rounded())
     return (cols, min(max(1, rows), maxRows))
 }
@@ -232,8 +224,6 @@ func render(_ img: CGImage, _ o: Options) -> Rendering {
     let (cw, ch_) = o.mode.cell
     let (cols, rows) = grid(o, w: img.width, h: img.height)
     var g = resample(img, to: cols * cw, rows * ch_, rotate: o.rotate)
-    // pixel mode in colour shows the image's own colours as tiles; without colour
-    // it has only two tones to work with, so it renders exactly like `half`
     let tiles = o.mode == .pixel && o.color
     if o.invert {
         g.px = g.px.map { 255 - $0 }
@@ -287,7 +277,6 @@ func render(_ img: CGImage, _ o: Options) -> Rendering {
             }
             line.append(Cell(ch: glyph, color: color))
         }
-        // braille keeps U+2800 blanks so columns stay aligned when pasted
         if o.mode != .braille {
             while line.last?.ch == " " { line.removeLast() }
         }

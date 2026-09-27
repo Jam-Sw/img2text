@@ -1,6 +1,6 @@
 # img2text
 
-Turn images and GIFs into text you can paste anywhere: braille, block and ASCII art, or true-colour pixel tiles. A command plus a small macOS app, for macOS 13+.
+Turn images and GIFs into text.
 
 ## Install
 
@@ -8,9 +8,10 @@ Turn images and GIFs into text you can paste anywhere: braille, block and ASCII 
 curl -fsSL https://raw.githubusercontent.com/Jam-Sw/img2text/main/install.sh | sh
 ```
 
-Then `img2text` opens the app. Run the same line again to uninstall.
+Then `img2text`
 
-Or download `img2text.app.zip` from [Releases](https://github.com/Jam-Sw/img2text/releases). The app is unsigned, so the first time you open it, go to System Settings → Privacy & Security → Open Anyway.
+Or download (unsigned) `img2text.app.zip` from [Releases](https://github.com/Jam-Sw/img2text/releases). 
+
 
 ## Usage
 

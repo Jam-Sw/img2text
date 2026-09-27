@@ -60,14 +60,11 @@ final class App: NSObject, NSApplicationDelegate {
         if let url = pendingOpen { load(url) } else { rerender() }
     }
 
-    /// Finder "Open With" and drops on the Dock icon arrive here, not in argv;
-    /// they can come before launch finishes, when the controls don't exist yet.
     func application(_: NSApplication, open urls: [URL]) {
         guard let url = urls.first else { return }
         if launched { load(url) } else { pendingOpen = url }
     }
 
-    /// Only a Quit item: without a main menu Cmd-Q does nothing.
     private func mainMenu() -> NSMenu {
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "Quit img2text", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -152,7 +149,7 @@ final class App: NSObject, NSApplicationDelegate {
 
         canvas.imageScaling = .scaleNone
         canvas.imageAlignment = .alignTopLeft
-        canvas.unregisterDraggedTypes()  // let drops fall through to the window-wide DropView
+        canvas.unregisterDraggedTypes()
         let scroll = NSScrollView()
         scroll.documentView = canvas
         scroll.hasVerticalScroller = true
@@ -336,7 +333,7 @@ final class App: NSObject, NSApplicationDelegate {
             if let first {
                 let out = NSMutableData()
                 let exportBudget = 512 << 20
-                let perFrame = 2 * first.bytesPerRow * first.height  // measured: encoder keeps ~2× raw
+                let perFrame = 2 * first.bytesPerRow * first.height
                 let keep = animated ? max(1, min(source.count, exportBudget / max(1, perFrame))) : 1
                 let step = Double(source.count) / Double(keep)
                 let type = (animated ? UTType.gif : UTType.png).identifier as CFString

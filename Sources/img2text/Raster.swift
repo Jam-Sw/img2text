@@ -45,13 +45,11 @@ final class Rasterizer {
         ctx.setFillColor(style.fg)
         var last: RGB? = nil
         for (ri, row) in r.rows.enumerated() {
-            // CG's origin is bottom-left; row 0 goes at the top
             let baseline = h - pad - CGFloat(ri) * cellH - ascent
             for (ci, cell) in row.enumerated() where cell.ch != " " && cell.ch != "\u{2800}" {
                 if let bg = cell.bg {
-                    // pixel mode: two exact square-ish tiles, no glyph, so rows butt together
                     let x = pad + CGFloat(ci) * cellW, top = h - pad - CGFloat(ri) * cellH
-                    ctx.setShouldAntialias(false)  // fractional cell sizes would blend tile edges into seams
+                    ctx.setShouldAntialias(false)
                     defer { ctx.setShouldAntialias(true) }
                     ctx.setFillColor(red: CGFloat(cell.color.r) / 255, green: CGFloat(cell.color.g) / 255, blue: CGFloat(cell.color.b) / 255, alpha: 1)
                     ctx.fill(CGRect(x: x, y: top - cellH / 2, width: cellW, height: cellH / 2))

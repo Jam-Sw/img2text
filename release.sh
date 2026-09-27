@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build the release assets into dist/, for Apple Silicon and Intel in one binary:
+# Build the release assets into dist/, [ Apple Silicon or Intel ] in one binary:
 #   dist/img2text          the command (what install.sh downloads)
 #   dist/img2text.app.zip  the app, unsigned
 #

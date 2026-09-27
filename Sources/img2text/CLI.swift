@@ -78,13 +78,13 @@ struct Args {
             case "--gui": gui = true
             case "-h", "--help": print(usage); exit(0)
             default:
-                if a.hasPrefix("-psn_") { continue }  // process serial number macOS may pass to an app
+                if a.hasPrefix("-psn_") { continue }
                 if a.hasPrefix("-") { throw ArgError("unknown flag: \(a)") }
                 guard image == nil else { throw ArgError("only one image allowed") }
                 image = a
             }
         }
-        if image == nil { gui = true }  // bare `img2text` opens the app
+        if image == nil { gui = true }
     }
 }
 
