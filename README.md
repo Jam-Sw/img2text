@@ -41,3 +41,7 @@ swift build -c release         # needs Xcode command line tools
 ./release.sh 0.1.0             # dist/img2text + dist/img2text.app.zip (Apple Silicon + Intel)
 gh release create v0.1.0 dist/img2text dist/img2text.app.zip --title v0.1.0 --generate-notes
 ```
+
+## License
+
+[MIT](LICENSE). Copyright (c) 2026 Jam-Sw.
